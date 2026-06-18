@@ -1,0 +1,82 @@
+{
+  "version": 1,
+  "author": "MeArm + Arduino UNO",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-arduino-uno",
+      "id": "uno",
+      "top": 220,
+      "left": 20,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "garra",
+      "top": 60,
+      "left": 530,
+      "attrs": { "horn": "single" },
+      "label": "GARRA (D6)"
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "cotovelo",
+      "top": 210,
+      "left": 530,
+      "attrs": { "horn": "single" },
+      "label": "COTOVELO (D9)"
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "ombro",
+      "top": 360,
+      "left": 530,
+      "attrs": { "horn": "single" },
+      "label": "OMBRO (D10)"
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "base",
+      "top": 510,
+      "left": 530,
+      "attrs": { "horn": "single" },
+      "label": "BASE (D11)"
+    },
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb",
+      "top": 680,
+      "left": 130,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-power-supply",
+      "id": "pwr",
+      "top": 690,
+      "left": 20,
+      "attrs": { "voltage": "5" },
+      "label": "FONTE USB 5V 2A"
+    }
+  ],
+  "connections": [
+    ["uno:6",     "garra:PWM",    "orange", ["h20",  "v-190"]],
+    ["uno:9",     "cotovelo:PWM", "orange", ["h30",  "v-40"]],
+    ["uno:10",    "ombro:PWM",    "orange", ["h40",  "v110"]],
+    ["uno:11",    "base:PWM",     "orange", ["h50",  "v260"]],
+
+    ["pwr:VCC",   "bb:tp.1",      "red",   []],
+    ["pwr:GND",   "bb:tn.1",      "black", []],
+
+    ["bb:tp.4",   "garra:V+",     "red",   ["v-580"]],
+    ["bb:tp.9",   "cotovelo:V+",  "red",   ["v-430"]],
+    ["bb:tp.14",  "ombro:V+",     "red",   ["v-280"]],
+    ["bb:tp.19",  "base:V+",      "red",   ["v-130"]],
+
+    ["bb:tn.4",   "garra:GND",    "black", ["v-576"]],
+    ["bb:tn.9",   "cotovelo:GND", "black", ["v-426"]],
+    ["bb:tn.14",  "ombro:GND",    "black", ["v-276"]],
+    ["bb:tn.19",  "base:GND",     "black", ["v-126"]],
+
+    ["uno:GND.1", "bb:tn.25",     "black", ["v380", "h-10"]]
+  ]
+}
