@@ -1,0 +1,4 @@
+software/target/
+*.class
+teste-base/*.class
+.DS_Store
