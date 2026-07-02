@@ -1,0 +1,517 @@
+:root {
+  color: #1c1f1e;
+  background: #101312;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  width: 100%; min-width: 320px; height: 100%; margin: 0;
+}
+
+button, input, select, textarea { font: inherit; }
+button { border: 0; cursor: pointer; }
+h1, h2, p { margin: 0; }
+
+/* ═══════════════════════════════════════════════════════════════
+   LAYOUT — 80% cena / 20% barra inferior
+   ═══════════════════════════════════════════════════════════════ */
+
+.ihm-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: #101312;
+  color: #f4f1e8;
+}
+
+/* Header compacto */
+.ihm-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 44px;
+  padding: 0 16px;
+  background: #151817;
+  border-bottom: 1px solid rgba(244, 241, 232, 0.1);
+  flex-shrink: 0;
+}
+
+.ihm-header h1 {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.ihm-header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conn-pill {
+  font-size: 0.78rem;
+  color: #88938e;
+}
+.conn-pill.online {
+  color: #22b8a0;
+}
+
+/* Cena 3D */
+.ihm-scene {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  background: #f2efe6;
+}
+
+.angle-overlay {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  padding: 4px 12px;
+  border-radius: 6px;
+  background: rgba(28, 31, 30, 0.8);
+  color: #f4f1e8;
+  font-size: 0.82rem;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 50;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   BARRA INFERIOR — G007
+   Undo | Redo | Log (centralizado) | REC | Play | Abrir Garra | Fechar Garra
+   ═══════════════════════════════════════════════════════════════ */
+
+.ihm-bar {
+  display: flex;
+  align-items: stretch;
+  gap: 6px;
+  height: clamp(120px, 20vh, 200px);
+  padding: 8px 10px;
+  background: #151817;
+  border-top: 1px solid rgba(244, 241, 232, 0.12);
+  flex-shrink: 0;
+}
+
+.ihm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 7px;
+  font-weight: 650;
+  font-size: 0.82rem;
+  color: #f4f1e8;
+  background: #252b29;
+  border: 1px solid rgba(244, 241, 232, 0.1);
+  cursor: pointer;
+  transition: background 120ms, transform 120ms;
+  white-space: nowrap;
+}
+
+.ihm-btn:hover:not(:disabled) {
+  background: #2f3835;
+  transform: translateY(-1px);
+}
+
+.ihm-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  transform: none;
+}
+
+.ihm-btn-sm {
+  padding: 4px 10px;
+  font-size: 0.74rem;
+  min-height: 28px;
+}
+
+.bar-btn {
+  min-width: 48px;
+  flex-shrink: 0;
+  font-size: 1rem;
+}
+
+/* Undo/Redo */
+.bar-btn:first-child,
+.bar-btn:nth-child(2) {
+  font-size: 1.3rem;
+  min-width: 42px;
+  padding: 4px 8px;
+}
+
+/* REC */
+.rec-btn {
+  color: #f4f1e8;
+}
+.rec-active {
+  background: #d85f47;
+  color: #fff;
+  animation: rec-pulse 1s ease-in-out infinite;
+}
+.rec-stop {
+  background: #d85f47;
+  color: #fff;
+}
+
+@keyframes rec-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+/* Gripper buttons */
+.gripper-btn {
+  font-size: 0.78rem;
+  padding: 4px 10px;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LOG — RF005 / G006
+   ═══════════════════════════════════════════════════════════════ */
+
+.bar-log {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.log-area {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+  padding: 6px 10px;
+  border: 1px solid rgba(244, 241, 232, 0.1);
+  border-radius: 6px;
+  background: #0d0f0e;
+  color: #b9c2bd;
+  font-family: "Cascadia Code", "Fira Code", monospace;
+  font-size: 0.72rem;
+  line-height: 1.5;
+  resize: none;
+  outline: none;
+}
+
+.log-input-wrap {
+  position: relative;
+}
+
+.log-input {
+  width: 100%;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid rgba(244, 241, 232, 0.14);
+  border-radius: 6px;
+  background: #1a1d1c;
+  color: #f4f1e8;
+  font-size: 0.76rem;
+  outline: none;
+}
+
+.log-input:focus {
+  border-color: #22b8a0;
+  box-shadow: 0 0 0 2px rgba(34, 184, 160, 0.2);
+}
+
+.log-input::placeholder {
+  color: #6b756f;
+}
+
+.log-suggestions {
+  position: absolute;
+  bottom: 34px;
+  left: 0;
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  background: #1a1d1c;
+  border: 1px solid rgba(244, 241, 232, 0.12);
+  border-radius: 6px;
+  z-index: 90;
+}
+
+.log-suggestions button {
+  padding: 3px 10px;
+  border-radius: 4px;
+  background: #252b29;
+  color: #d4cfc5;
+  font-size: 0.72rem;
+  border: 0;
+}
+
+.log-suggestions button:hover {
+  background: #22b8a0;
+  color: #fff;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DIALOGS — G001 / G002 / G003 / G004
+   ═══════════════════════════════════════════════════════════════ */
+
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(0, 0, 0, 0.6);
+  z-index: 200;
+}
+
+.dialog {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 320px;
+  max-width: 420px;
+  padding: 22px;
+  border-radius: 12px;
+  background: #1a1d1c;
+  color: #f4f1e8;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.dialog h2 {
+  font-size: 1rem;
+}
+
+.dialog p {
+  color: #b9c2bd;
+  font-size: 0.86rem;
+  line-height: 1.4;
+}
+
+.dialog label {
+  color: #aeb8b3;
+  font-size: 0.8rem;
+}
+
+.dialog select,
+.dialog input[type="text"] {
+  width: 100%;
+  height: 36px;
+  padding: 0 10px;
+  border: 1px solid rgba(244, 241, 232, 0.14);
+  border-radius: 7px;
+  color: #f6f2e8;
+  background: #202524;
+  outline: none;
+}
+
+.dialog select:focus,
+.dialog input:focus {
+  border-color: #22b8a0;
+}
+
+/* G001: confirmar no canto inferior direito
+   G002: voltar/cancelar no canto inferior esquerdo
+   G003: confirmar = verde
+   G004: cancelar = vermelho */
+.dialog-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 6px;
+}
+
+.dialog-cancel {
+  background: #d85f47 !important;
+  color: #fff !important;
+}
+
+.dialog-confirm {
+  background: #22b8a0 !important;
+  color: #101312 !important;
+  font-weight: 700;
+  margin-left: auto;
+}
+
+/* Sequence list */
+.seq-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.seq-item {
+  text-align: left;
+  justify-content: flex-start;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   3D SCENE
+   ═══════════════════════════════════════════════════════════════ */
+
+.scene-shell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+}
+
+.scene-shell canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.scene-badge {
+  position: absolute;
+  left: 16px;
+  bottom: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: calc(100% - 32px);
+}
+
+.axis-chip {
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid rgba(28, 31, 30, 0.12);
+  border-radius: 999px;
+  color: #1c1f1e;
+  background: rgba(246, 242, 232, 0.82);
+  cursor: pointer;
+  font-size: 0.82rem;
+}
+
+.axis-chip.active {
+  color: #fffaf4;
+  background: #d85f47;
+}
+
+/* Joint handles */
+.joint-dom-handle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 32px;
+  padding: 5px 8px;
+  border: 1px solid rgba(28, 31, 30, 0.2);
+  border-radius: 999px;
+  color: #17211f;
+  background: rgba(246, 242, 232, 0.9);
+  box-shadow: 0 8px 22px rgba(0, 0, 0, 0.16);
+  cursor: grab;
+  font-size: 0.76rem;
+  font-weight: 700;
+  line-height: 1;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.joint-dom-handle.active {
+  color: #fffaf4;
+  background: #d85f47;
+}
+
+.joint-dom-handle:active {
+  cursor: grabbing;
+}
+
+.joint-dom-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 999px;
+  background: #22b8a0;
+}
+
+.joint-dom-handle.active .joint-dom-dot {
+  background: #fffaf4;
+}
+
+/* Edit mode */
+.joint-dom-handle.edit-mode {
+  cursor: move;
+  border: 2px dashed #22b8a0;
+  background: rgba(34, 184, 160, 0.15);
+  color: #17211f;
+}
+
+.joint-dom-coords {
+  font-size: 0.6rem;
+  font-weight: 400;
+  opacity: 0.7;
+  font-family: monospace;
+}
+
+.edit-labels-toolbar {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 100;
+}
+
+.edit-labels-btn {
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  background: rgba(28, 31, 30, 0.85);
+  color: #d4cfc5;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  backdrop-filter: blur(8px);
+}
+
+.edit-labels-btn:hover {
+  background: rgba(28, 31, 30, 0.95);
+  color: #fff;
+}
+
+.edit-labels-btn.active {
+  background: #22b8a0;
+  color: #fff;
+  border-color: #22b8a0;
+}
+
+.edit-mode-banner {
+  position: absolute;
+  top: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 6px 16px;
+  border-radius: 6px;
+  background: rgba(34, 184, 160, 0.9);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+  z-index: 100;
+  pointer-events: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════════════════════ */
+
+@media (max-width: 800px) {
+  .ihm-bar {
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 100px;
+  }
+
+  .bar-log {
+    order: 10;
+    width: 100%;
+    min-height: 60px;
+  }
+
+  .gripper-btn {
+    font-size: 0.7rem;
+    padding: 4px 6px;
+  }
+}

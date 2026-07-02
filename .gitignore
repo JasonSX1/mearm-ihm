@@ -2,3 +2,7 @@ software/target/
 *.class
 teste-base/*.class
 .DS_Store
+ihm-web/node_modules/
+ihm-web/dist/
+ihm-web/dist-server/
+ihm-web/.me-arm-data/
