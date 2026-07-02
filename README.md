@@ -4,71 +4,102 @@
 
 Projeto desenvolvido na disciplina de **Interface Homem-Máquina (IHM)** do curso de **Bacharelado em Sistemas de Informação (BSI)** do **IFBA — Instituto Federal da Bahia**, sob orientação do **Prof. Bruno Silvério Costa**.
 
-O projeto consiste em uma interface gráfica desktop (JavaFX) para controle de um braço robótico **MeArm V1.0** acoplado a um **Arduino UNO**, desenvolvida por um grupo de 5 alunos. A IHM permite visualizar e manipular o braço em tempo real via porta serial, além de gravar e reproduzir sequências de movimentos.
+O projeto consiste em duas interfaces gráficas para controle de um braço robótico **MeArm V1.0** acoplado a um **Arduino UNO**, permitindo visualizar e manipular o braço em tempo real via porta serial, gravar e reproduzir sequências de movimentos.
+
+**Alunos:** David Inácio F. da Silva Júnior · Pedro Henrique de O. dos Anjos · Geison de Oliveira Lemos Ferreira · Heder Moreira David · Luiz Castro Ramos
 
 ---
 
-## Pré-requisitos
+## Estrutura do Repositório
 
-| Item | Versão / Detalhes |
-|------|--------------------|
-| Java | 17 ou superior (testado com Microsoft JDK 17.0.19) |
-| Maven | 3.9+ |
-| Arduino UNO | Firmware compatível com protocolo serial (baud 9600) |
-| Servos | 4x SG90 (base, ombro, cotovelo, garra) |
-| Alimentação | Fonte externa 5V 2A para os servos (NÃO usar o pino 5V do Arduino) |
+```
+mearm-ihm/
+├── ihm-web/             ⭐ Interface Web (React + Three.js + Node.js)
+│   ├── src/                 # Frontend React + TypeScript
+│   │   ├── App.tsx              # Layout, Undo/Redo, Log, REC, Garra (RF001-RF006)
+│   │   ├── components/
+│   │   │   └── ArmScene.tsx     # Modelo 3D + manipulação direta (G005)
+│   │   ├── hooks/
+│   │   │   └── useRobot.ts      # Estado do robô via WebSocket
+│   │   ├── lib/
+│   │   │   ├── api.ts           # Chamadas HTTP
+│   │   │   └── types.ts         # Tipos e limites dos eixos
+│   │   └── styles.css           # Layout, barra inferior, diálogos (G001-G007)
+│   ├── server/              # Backend Node.js
+│   │   ├── index.ts             # API Express + WebSocket (porta 8787)
+│   │   ├── serialController.ts  # Comunicação serial 9600 baud + interpolação
+│   │   ├── defaults.ts          # Calibração padrão (pinos, limites)
+│   │   └── calibrationStore.ts  # Persistência
+│   ├── firmware/            # Firmware alternativo (referência)
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── rodar.bat            # Script Windows para iniciar
+│
+├── software/            📦 Interface Desktop (JavaFX — Java 17)
+│   ├── src/main/java/br/ifba/braco/
+│   │   ├── Main.java            # Ponto de entrada + diálogo de conexão
+│   │   ├── SerialManager.java   # Comunicação serial via jSerialComm
+│   │   ├── model/
+│   │   │   ├── ArmState.java    # Estado das 4 articulações
+│   │   │   └── Sequence.java    # Sequência gravada
+│   │   └── view/
+│   │       ├── MainWindow.java  # Janela principal
+│   │       └── ArmPanel.java    # Canvas interativo do braço
+│   ├── pom.xml
+│   └── rodar.bat
+│
+├── codigo/              🔧 Firmware Arduino
+│   ├── InterfaceBracoRobo/      # Firmware principal (protocolo serial)
+│   └── TesteBase/               # Teste isolado do servo da base
+│
+├── esquemas/            📐 Esquemas elétricos e diagramas
+├── manual/              📖 Manual de montagem MeArm V1.0
+├── teste-base/          🧪 Teste Java isolado para servo da base
+└── fotos/               📷 Fotos do robô montado
+```
 
 ---
 
 ## Como Executar
 
-### Opção 1 — Duplo clique (Windows)
+### Interface Web (recomendada)
 
-```
-software/rodar.bat
-```
+**Pré-requisitos:** Node.js 18+
 
-### Opção 2 — Terminal
-
-Dentro da pasta `software/`, execute:
-
-```bat
-set JAVA_HOME=C:\Program Files\Microsoft\jdk-17.0.19.10-hotspot
-C:\maven\apache-maven-3.9.6\bin\mvn.cmd javafx:run
+```bash
+cd ihm-web
+npm install       # primeira vez
+npm run dev       # inicia servidor + frontend
 ```
 
-Ao iniciar, um diálogo de conexão perguntará a porta serial (ex: `COM4`). Caso não haja Arduino disponível, use o botão **"Modo Simulação"** para rodar sem hardware.
+Acesse **http://localhost:5173** no navegador. Conecte o Arduino clicando em **"Conectar"** no header.
 
----
+### Interface Desktop (JavaFX)
 
-## Estrutura do Projeto
+**Pré-requisitos:** Java 17+, Maven 3.9+
 
-```
-robo ihm/
-├── codigo/          # Firmware Arduino (.ino)
-├── esquemas/        # Esquemas elétricos e diagramas de montagem
-├── software/        # Aplicação JavaFX (Maven)
-│   ├── src/main/java/br/ifba/braco/
-│   │   ├── Main.java              # Ponto de entrada; diálogo de conexão
-│   │   ├── SerialManager.java     # Comunicação serial via jSerialComm
-│   │   ├── model/
-│   │   │   ├── ArmState.java      # Estado imutável das 4 articulações
-│   │   │   └── Sequence.java      # Sequência gravada de snapshots
-│   │   └── view/
-│   │       ├── MainWindow.java    # Janela principal (log, undo/redo, rec, play)
-│   │       └── ArmPanel.java      # Canvas interativo do braço (drag & drop)
-│   ├── rodar.bat                  # Script de execução rápida
-│   └── pom.xml                    # Dependências Maven (JavaFX + jSerialComm)
-└── teste-base/      # Sketches e testes isolados de hardware
+```bash
+cd software
+rodar.bat         # Windows
+# ou: mvn javafx:run
 ```
 
 ---
 
-## Conexão com Arduino
+## Hardware
 
-A comunicação é feita via porta serial (baud **9600**, 8N1). O software usa a biblioteca **jSerialComm 2.10.4**.
+### Pinagem Arduino UNO
 
-### Comandos enviados (PC → Arduino)
+| Articulação | Pino | Servo |
+|-------------|------|-------|
+| Base        | D11  | SG90  |
+| Ombro       | D10  | SG90  |
+| Cotovelo    | D9   | SG90  |
+| Garra       | D6   | SG90  |
+
+> **Importante:** alimentar os servos com fonte externa **5V 2A**. Não usar o pino 5V do Arduino.
+
+### Protocolo Serial (9600 baud, 8N1)
 
 | Comando | Exemplo | Descrição |
 |---------|---------|-----------|
@@ -76,69 +107,53 @@ A comunicação é feita via porta serial (baud **9600**, 8N1). O software usa a
 | `ombro N` | `ombro 45` | Move o ombro para N graus |
 | `cotovelo N` | `cotovelo 30` | Move o cotovelo para N graus |
 | `garra N` | `garra 0` | Move a garra para N graus |
-| `todos B O C G` | `todos 90 90 0 0` | Move todas as juntas simultaneamente |
-| `home` | `home` | Retorna à pose inicial (90 90 0 0) |
-| `status` | `status` | Solicita leitura dos ângulos atuais |
-
-### Respostas esperadas (Arduino → PC)
-
-```
-Base: 90
-Ombro: 90
-Cotovelo: 0
-Garra: 0
-```
-
-Cada linha é processada pelo `SerialManager` e encaminhada para o log da interface.
+| `todos B O C G` | `todos 90 90 90 90` | Move todas as juntas |
+| `home` | `home` | Retorna à pose inicial |
+| `status` | `status` | Solicita ângulos atuais |
 
 ---
 
-## Pinagem Arduino
+## Tecnologias
 
-| Articulação | Pino Arduino | Servo |
-|-------------|-------------|-------|
-| Base | D11 | SG90 |
-| Ombro | D10 | SG90 |
-| Cotovelo | D9 | SG90 |
-| Garra | D6 | SG90 |
-
-> **Importante:** os servos devem ser alimentados por fonte externa 5V 2A. Usar o pino 5V do Arduino pode causar reset por sobrecorrente.
-
----
-
-## Rastreabilidade de Requisitos
-
-| RF | Descrição | Guidelines | Estado Visual |
-|----|-----------|------------|---------------|
-| RF001 | Visualização do braço em tempo real | G005, G007 | Normal, Hover, Arrastando |
-| RF002 | Movimentação por manipulação direta (drag) | G005, G007 | Hover, Arrastando, Limite atingido |
-| RF003 | Controle da garra (Abrir/Fechar) | G007 | Normal, botão desabilitado |
-| RF004 | Undo/Redo | G007 | Normal, botão desabilitado |
-| RF005 | Log textual editável com autocomplete | G001, G003, G004, G006, G007 | Normal, diálogo Limpar Log |
-| RF006 | Gravação e reprodução de sequências | G001, G003, G004, G007 | Gravando (REC pulsando), Reproduzindo |
+| Camada | Interface Web | Interface Desktop |
+|--------|--------------|-------------------|
+| **Frontend** | React 19 + TypeScript | JavaFX 21 |
+| **3D/Canvas** | Three.js + React Three Fiber | Canvas 2D nativo |
+| **Servidor** | Node.js + Express + WebSocket | — |
+| **Serial** | `serialport` (npm) | jSerialComm 2.10.4 |
+| **Build** | Vite | Maven |
 
 ---
 
-## Guidelines Implementadas
+## Requisitos Funcionais
 
-| ID | Descrição | Onde aparece no código |
-|----|-----------|------------------------|
-| G001 | Feedback imediato de ações | Log com timestamp em `MainWindow.adicionarLog()` |
-| G002 | Consistência visual | Paleta dark unificada (`#1e293b`, `#0f172a`) em todos os componentes |
-| G003 | Prevenção de erros | Diálogo de confirmação antes de limpar log (`confirmarLimparLog()`) |
-| G004 | Reconhecimento em vez de lembrança | Autocomplete de comandos no log (`setupAutocomplete()`) |
-| G005 | Manipulação direta | Drag nas juntas do canvas em `ArmPanel.setupInteraction()` |
-| G006 | Controle do usuário | Log editável; usuário pode corrigir/inserir comandos manualmente |
-| G007 | Visibilidade do estado do sistema | Botões habilitados/desabilitados conforme contexto (`atualizarBotoes()`); tooltip de ângulo durante drag; flash vermelho no limite |
+| RF | Descrição | Guidelines |
+|----|-----------|------------|
+| RF001 | Visualização do braço em tempo real | G005, G007 |
+| RF002 | Movimentação por manipulação direta (drag) | G005, G007 |
+| RF003 | Controle da garra (Abrir/Fechar) | G007 |
+| RF004 | Undo/Redo | G007 |
+| RF005 | Log textual editável com sugestões | G001, G003, G004, G006, G007 |
+| RF006 | Gravação e reprodução de sequências | G001, G003, G004, G007 |
+
+## Guidelines
+
+| ID | Descrição |
+|----|-----------|
+| G001 | Botão de confirmação no canto inferior direito dos diálogos |
+| G002 | Botão voltar/cancelar no canto inferior esquerdo |
+| G003 | Botão de confirmação em verde |
+| G004 | Botão de cancelar em vermelho |
+| G005 | Cursor de rotação ao passar sobre articulação |
+| G006 | Log editável com sugestões de comandos |
+| G007 | Ordem fixa: Undo, Redo, Log, REC, Abrir Garra, Fechar Garra |
 
 ---
 
 ## Paradigmas de Interação
 
 ### Manipulação Direta
+As articulações são objetos interativos (bolas 3D / círculos no canvas) que o usuário clica e arrasta com feedback imediato. Ações são reversíveis via Undo/Redo.
 
-O canvas (`ArmPanel`) permite arrastar as juntas (base, ombro, cotovelo) com o mouse. O feedback é imediato: a representação visual do braço atualiza em tempo real durante o drag, um tooltip exibe o ângulo atual e a junta pisca em vermelho ao atingir o limite de articulação. Ao soltar o mouse, o comando serial correspondente é enviado automaticamente ao Arduino.
-
-### Abordagem Construtivista
-
-O sistema de gravação e reprodução de sequências (`RF006`) permite ao usuário construir comportamentos complexos incrementalmente: ele move o braço livremente, grava a sequência de movimentos (capturando snapshots a cada 100ms) e pode reproduzi-la quantas vezes desejar. Essa abordagem coloca o usuário no papel de autor da programação do robô, sem necessidade de escrever código.
+### Construtivismo
+Sem tutorial obrigatório — o usuário aprende explorando. O log funciona como andaime (*scaffolding*): o usuário observa os comandos gerados pelas ações gráficas e pode evoluir para uso textual.
